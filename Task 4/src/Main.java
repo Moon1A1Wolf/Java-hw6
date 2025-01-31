@@ -168,20 +168,36 @@ class Catalog {
     }
 
     public void displayAll() {
+        if (items.isEmpty()) {
+            System.out.println("Каталог порожній.");
+            return;
+        }
         items.forEach(item -> System.out.println(item.displayInfo()));
     }
 
+    private void displaySearchResults(List<LibraryItem> results, String searchType) {
+        if (results.isEmpty()) {
+            System.out.println("За вашим запитом '" + searchType + "' нічого не знайдено.");
+            return;
+        }
+        results.forEach(item -> System.out.println(item.displayInfo()));
+    }
+
     public List<LibraryItem> searchByTitle(String title) {
-        return items.stream()
+        List<LibraryItem> result = items.stream()
             .filter(item -> item.getTitle().equalsIgnoreCase(title))
             .collect(Collectors.toList());
+        displaySearchResults(result, "назвою '" + title + "'");
+        return result;
     }
 
     public List<LibraryItem> searchByAuthor(String author) {
-        return items.stream()
+        List<LibraryItem> result = items.stream()
             .filter(item -> item instanceof Book)
             .filter(book -> ((Book) book).getAuthor().equalsIgnoreCase(author))
             .collect(Collectors.toList());
+        displaySearchResults(result, "автором '" + author + "'");
+        return result;
     }
 }
 
@@ -198,12 +214,10 @@ public class Main {
         catalog.displayAll();
 
         System.out.println("\nПошук за назвою 'Гобіт':");
-        catalog.searchByTitle("Гобіт").forEach(item -> 
-            System.out.println(item.displayInfo()));
+        catalog.searchByTitle("Гобіт");
 
         System.out.println("\nПошук за автором 'Дж. Роулінг':");
-        catalog.searchByAuthor("Дж. Роулінг").forEach(item -> 
-            System.out.println(item.displayInfo()));
+        catalog.searchByAuthor("Дж. Роулінг");
 
         catalog.deleteByTitle("The Guardian");
         System.out.println("\nПісля видалення 'The Guardian':");
